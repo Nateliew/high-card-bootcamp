@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import { makeShuffledDeck } from "./utils.js";
 
-class App extends React.Component {
+export default class App extends React.Component {
   constructor(props) {
     // Always call super with props in constructor to initialise parent class
     super(props);
@@ -48,6 +48,7 @@ class App extends React.Component {
       //store the 2 cards
       currCards: dealtCurrCards,
       newWinner: gameWinner,
+      game: true,
 
       // store player 1's score & player 2's score
       // store who is the current winner
@@ -69,9 +70,10 @@ class App extends React.Component {
       cardDeck: makeShuffledDeck(),
       currCards: [],
       game: false,
-      roundsLeft: 0,
+      roundsLeft: 26,
       player1Score: 0,
       player2Score: 0,
+      newWinner: 0,
     });
   };
 
@@ -81,7 +83,13 @@ class App extends React.Component {
     });
   };
 
-  // after each round, clear the currCards and call shuffleDeck again
+  determineWinner = () => {
+    if (this.state.player1Score > this.state.player2Score) {
+      return "Player 1 wins!";
+    } else if (this.state.player1Score < this.state.player2Score) {
+      return "Player 2 wins!";
+    } else return "It's a draw!";
+  };
 
   render() {
     //render two cards out
@@ -91,6 +99,7 @@ class App extends React.Component {
         {name} of {suit}
       </div>
     ));
+    const dealButtonText = this.roundsLeft === 0 ? null : "Deal";
 
     return (
       <div className="App">
@@ -99,20 +108,22 @@ class App extends React.Component {
           {currCardElems}
           <br />
           <button
-            onClick={() => {
-              this.dealCards();
-            }}
+            onClick={this.roundsLeft === 0 ? this.resetGame : this.dealCards}
           >
-            Deal
+            {dealButtonText}
           </button>
+          <button onClick={this.resetGame}>{"Reset Game"}</button>
           <p>Player 1 has a score of {this.state.player1Score}</p>
           <p>Player 2 has a score of {this.state.player2Score}</p>
           <p>There are {this.state.roundsLeft} rounds left</p>
+          <p>
+            {this.state.roundsLeft === 0 ? (
+              <this.determineWinner></this.determineWinner>
+            ) : null}
+          </p>
           <p>winner is {this.state.newWinner}</p>
         </header>
       </div>
     );
   }
 }
-
-export default App;
